@@ -20,5 +20,46 @@ class WeatherTest(unittest.TestCase):
                               'forecast': {}}
         self.assertEqual(formating_response, app.formating(response))
 
+    #Test Wind Decription
+    
+    def test_calm_wind(self):
+        self.assertEqual(app.wind_description(0.3),"calm")
+
+    def test_calm_light_air(self):
+        self.assertEqual(app.wind_description(1.3),"Light air")
+    
+    def test_Light_breeze(self):
+        self.assertEqual(app.wind_description(2.5),"Light breeze")
+
+    def test_Gentle_breeze(self):
+        self.assertEqual(app.wind_description(5),"Gentle breeze")
+    
+    def test_Moderate_breeze(self):
+        self.assertEqual(app.wind_description(7.5),"Moderate breeze")
+
+    def test_Fresh_breeze(self):
+        self.assertEqual(app.wind_description(8.8),"Fresh breeze")
+
+    def test_Strong_breeze(self):
+        self.assertEqual(app.wind_description(12),"Strong breeze")
+
+    def test_High_wind(self):
+        self.assertEqual(app.wind_description(14.5),"High wind")
+    
+    def test_gale(self):
+        self.assertEqual(app.wind_description(20),"Gale")
+
+    def test_strong_gale(self):
+        self.assertEqual(app.wind_description(20),"Strong gale")
+
+    def test_storm(self):
+        self.assertEqual(app.wind_description(26.7),"Storm")
+    
+    def test_violent_storm(self):
+        self.assertEqual(app.wind_description(31.3),"Violent Storm")
+    
+    def test_hurricane(self):
+        self.assertEqual(app.wind_description(34),"Hurricane")
+
 if __name__ == '__main__':
     unittest.main()
