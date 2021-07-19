@@ -1,14 +1,25 @@
 from flask import Flask, request
+from flask_caching import Cache
 import requests
 import time
 
+config = {
+    "DEBUG": True,
+    "CACHE_TYPE": "SimpleCache",
+    "CACHE_DEFAULT_TIMEOUT": 120
+}
+
 app = Flask(__name__)
+
+app.config.from_mapping(config)
+cache = Cache(app)
 
 @app.route("/")
 def index():
     return "Welcome!"
 
 @app.route('/weather', methods=['GET'])
+@cache.cached()
 def get_weather():
     city = request.args.get('city', default=None)
     country = request.args.get('country', default=None)
@@ -26,10 +37,10 @@ def get_info_openweather(city, country):
 
 def formating(resp):
     res_format ={"location_name": resp["name"] + ", " + resp["sys"]["country"],
-                 "temperature": str(round(resp["main"]["temp"] - 273.15,0)) + " °C",
-                 "wind": resp["wind"],
+                 "temperature": str(round(resp["main"]["temp"] - 273.15,0)) + " C",
+                 "wind": wind_description(resp["wind"]["speed"]) + "," + str(resp["wind"]["speed"]) + "m/s," + wind_direction(resp["wind"]["deg"]),
                   "cloudiness": resp["weather"][0]["description"],
-                 "pressure": str(resp["main"]["pressure"]) + "hpa",
+                 "pressure": str(resp["main"]["pressure"]) + " hpa",
                  "humidity": str(resp["main"]["humidity"]) + "%",
                  "sunrise": time.strftime("%H:%M",time.gmtime(resp["sys"]["sunrise"])),
                  "sunset": time.strftime("%H:%M",time.gmtime(resp["sys"]["sunset"])),
@@ -73,3 +84,15 @@ def wind_description(speed):
     else:
         description = "Hurricane"
     return description
+
+'''
+Return the direction of the wind
+parameters:
+    degree : double
+    wind directions, units degrees 
+'''
+def wind_direction(degree):
+    directions = ["North","North-Northeast","Northeast","East-Northeast","East","East-Southeast",
+                  "Southeast","South-Southeast","South","South-Southwest","Southwest",
+                  "West-Southwest","West","West-northwest","Northwest","North-northwest","North"]
+    return directions[round((degree % 360)/ 22.5)]
